@@ -6,7 +6,7 @@ edition = "2018"
 exclude = ["/.cci.jenkinsfile", "/.github", "/.gitignore", "/.travis.yml"]
 authors = [ "Benjamin Gilbert <bgilbert@redhat.com>" ]
 description = "AuthorizedKeysCommand wrapper to read ~/.ssh/authorized_keys.d"
-version = "0.0.1-alpha.0"
+version = "0.1.0-alpha.0"
 
 [package.metadata.release]
 sign-commit = true
