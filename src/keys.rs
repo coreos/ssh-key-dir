@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::fs::{read_dir, DirEntry, OpenOptions};
+use std::fs::{metadata, read_dir, DirEntry, OpenOptions};
 use std::io::{self, copy, Write};
 use std::os::unix::ffi::OsStringExt;
 use std::os::unix::fs::{MetadataExt, PermissionsExt};
@@ -108,7 +108,13 @@ fn try_read_key_file(
         bail!("{} is a dotfile, ignoring", ent.path().display());
     }
 
-    // check file permissions
+    // check file type and permissions
+    if !metadata(ent.path())
+        .chain_err(|| format!("couldn't stat {}", ent.path().display()))?
+        .is_file()
+    {
+        bail!("{} is not a file, ignoring", ent.path().display());
+    }
     ensure_safe_permissions(&ent.path())?;
 
     // open file
@@ -116,14 +122,6 @@ fn try_read_key_file(
         .read(true)
         .open(ent.path())
         .chain_err(|| format!("opening {}", ent.path().display()))?;
-    // avoid writing out the path comment if we have a directory
-    if !file
-        .metadata()
-        .chain_err(|| format!("getting metadata for {}", ent.path().display()))?
-        .is_file()
-    {
-        bail!("{} is not a file, ignoring", ent.path().display());
-    }
 
     // write comment with source path
     let safe_path = ent.path().to_string_lossy().replace("\n", "\u{fffd}");
@@ -150,6 +148,8 @@ mod tests {
     use std::io::Cursor;
     use std::os::unix::fs::symlink;
 
+    use nix::sys::stat;
+    use nix::unistd::mkfifo;
     use tempfile::{Builder, TempDir};
 
     fn make_file(path: &Path, contents: &str) -> Result<()> {
@@ -195,6 +195,8 @@ mod tests {
         symlink(&keydir.join("d"), &keydir.join("sd"))?;
         // dangling symlink
         symlink(&keydir.join("nx"), &keydir.join("snx"))?;
+        // fifo
+        mkfifo(&keydir.join("fifo"), stat::Mode::S_IRUSR)?;
 
         Ok(dir)
     }
@@ -255,8 +257,9 @@ Caused by: Permission denied (os error 13)
 
 Error: {dir}/d is not a file, ignoring
 
-Error: opening {dir}/dnp
-Caused by: Permission denied (os error 13)
+Error: {dir}/dnp is not a file, ignoring
+
+Error: {dir}/fifo is not a file, ignoring
 
 Error: {dir}/sd is not a file, ignoring
 
