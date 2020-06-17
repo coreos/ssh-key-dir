@@ -30,4 +30,5 @@ error-chain = { version = "0.12", default-features = false }
 users = "0.10"
 
 [dev-dependencies]
+nix = "0.17"
 tempfile = "3"
