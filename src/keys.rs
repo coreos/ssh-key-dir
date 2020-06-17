@@ -19,7 +19,7 @@ use std::os::unix::fs::{MetadataExt, PermissionsExt};
 use std::path::{Path, PathBuf};
 
 use error_chain::{bail, ChainedError};
-use users::get_current_uid;
+use users::get_effective_uid;
 
 use crate::errors::{Result, ResultExt};
 
@@ -79,7 +79,7 @@ fn ensure_safe_permissions(path: &Path) -> Result<()> {
 
     // owned by user or root
     let uid = metadata.uid();
-    if uid != 0 && uid != get_current_uid() {
+    if uid != 0 && uid != get_effective_uid() {
         bail!("bad ownership on {}: {}", path.display(), uid);
     }
 
@@ -218,7 +218,7 @@ mod tests {
 
     #[test]
     fn test_read_keys() {
-        if get_current_uid() == 0 {
+        if get_effective_uid() == 0 {
             panic!("can't run tests as root");
         }
 
