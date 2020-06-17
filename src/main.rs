@@ -90,7 +90,7 @@ fn run() -> Result<()> {
 mod tests {
     use super::*;
 
-    use users::{get_current_uid, get_current_username};
+    use users::{get_current_username, get_effective_uid};
 
     fn wrap_switch_user(username: &str) -> Result<User> {
         switch_user(&OsString::from(username)).map(|(u, _g)| u)
@@ -98,7 +98,7 @@ mod tests {
 
     #[test]
     fn test_switch_user() {
-        if get_current_uid() == 0 {
+        if get_effective_uid() == 0 {
             panic!("can't run tests as root");
         }
         assert_eq!(
