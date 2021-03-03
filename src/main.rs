@@ -15,19 +15,15 @@
 use std::ffi::{OsStr, OsString};
 use std::io;
 
+use anyhow::{Context, Result};
 use clap::{crate_version, App, AppSettings, Arg};
-use error_chain::quick_main;
 use users::os::unix::UserExt;
 use users::switch::{switch_user_group, SwitchUserGuard};
 use users::{get_current_username, get_user_by_name, User};
 
-use crate::errors::{Result, ResultExt};
 use crate::keys::read_keys;
 
-mod errors;
 mod keys;
-
-quick_main!(run);
 
 struct Config {
     username: OsString,
@@ -59,13 +55,14 @@ fn parse_args() -> Result<Config> {
 }
 
 fn switch_user(username: &OsStr) -> Result<(User, SwitchUserGuard)> {
-    let user = get_user_by_name(username).chain_err(|| format!("no such user {:?}", username))?;
-    let guard = switch_user_group(user.uid(), user.primary_group_id())
-        .chain_err(|| "couldn't switch user")?;
+    let user =
+        get_user_by_name(username).with_context(|| format!("no such user {:?}", username))?;
+    let guard =
+        switch_user_group(user.uid(), user.primary_group_id()).context("couldn't switch user")?;
     Ok((user, guard))
 }
 
-fn run() -> Result<()> {
+fn main() -> Result<()> {
     // parse args
     let opts = parse_args()?;
 
