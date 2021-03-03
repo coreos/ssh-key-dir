@@ -18,10 +18,8 @@ use std::os::unix::ffi::OsStringExt;
 use std::os::unix::fs::{MetadataExt, PermissionsExt};
 use std::path::{Path, PathBuf};
 
-use error_chain::{bail, ChainedError};
+use anyhow::{bail, Context, Result};
 use users::get_effective_uid;
-
-use crate::errors::{Result, ResultExt};
 
 const KEYS_SUBDIR: &str = "authorized_keys.d";
 
@@ -41,7 +39,7 @@ pub(crate) fn read_keys(ssh_dir: &Path, out: &mut impl Write, err: &mut impl Wri
 
     // read directory in lexical order
     let mut entries = read_dir(&authorized_keys_dir)
-        .chain_err(|| format!("reading {}", authorized_keys_dir.display()))?
+        .with_context(|| format!("reading {}", authorized_keys_dir.display()))?
         .collect::<Vec<_>>();
     entries.sort_unstable_by(|a, b| {
         a.as_ref()
@@ -60,7 +58,7 @@ pub(crate) fn read_keys(ssh_dir: &Path, out: &mut impl Write, err: &mut impl Wri
         match try_read_key_file(&authorized_keys_dir, ent, out) {
             Ok(_) => (),
             Err(e) => {
-                let _ = err.write_all(format!("{}\n", e.display_chain()).as_bytes());
+                let _ = err.write_all(format!("Error: {:#}\n", e).as_bytes());
             }
         };
     }
@@ -75,7 +73,7 @@ pub(crate) fn read_keys(ssh_dir: &Path, out: &mut impl Write, err: &mut impl Wri
 fn ensure_safe_permissions(path: &Path) -> Result<()> {
     let metadata = path
         .metadata()
-        .chain_err(|| format!("couldn't stat {}", path.display()))?;
+        .with_context(|| format!("couldn't stat {}", path.display()))?;
 
     // owned by user or root
     let uid = metadata.uid();
@@ -101,7 +99,7 @@ fn try_read_key_file(
     out: &mut impl Write,
 ) -> Result<()> {
     // unpack error
-    let ent = ent.chain_err(|| format!("reading {}", dir_path.display()))?;
+    let ent = ent.with_context(|| format!("reading {}", dir_path.display()))?;
 
     // ignore dotfiles
     if ent.file_name().into_vec()[0] == b'.' {
@@ -110,7 +108,7 @@ fn try_read_key_file(
 
     // check file type and permissions
     if !metadata(ent.path())
-        .chain_err(|| format!("couldn't stat {}", ent.path().display()))?
+        .with_context(|| format!("couldn't stat {}", ent.path().display()))?
         .is_file()
     {
         bail!("{} is not a file, ignoring", ent.path().display());
@@ -121,22 +119,19 @@ fn try_read_key_file(
     let mut file = OpenOptions::new()
         .read(true)
         .open(ent.path())
-        .chain_err(|| format!("opening {}", ent.path().display()))?;
+        .with_context(|| format!("opening {}", ent.path().display()))?;
 
     // write comment with source path
     let safe_path = ent.path().to_string_lossy().replace("\n", "\u{fffd}");
     out.write_all(format!("# {}\n", safe_path).as_bytes())
-        .chain_err(|| format!("writing header for {}", ent.path().display()))?;
+        .with_context(|| format!("writing header for {}", ent.path().display()))?;
 
     // Copy file contents, ensuring output is newline-terminated even if the
     // file isn't, or if copy() fails partway.  Also add an extra newline to
     // separate files from each other.  Return first error.
-    let result = copy(&mut file, out).chain_err(|| format!("copying {}", ent.path().display()));
+    let result = copy(&mut file, out).with_context(|| format!("copying {}", ent.path().display()));
     result
-        .and(
-            out.write_all(&[b'\n', b'\n'])
-                .chain_err(|| "writing newlines"),
-        )
+        .and(out.write_all(&[b'\n', b'\n']).context("writing newlines"))
         .map(|_count| ())
 }
 
@@ -251,21 +246,12 @@ file-a-no-newline
             ),
             &format!(
                 "Error: {dir}/.h is a dotfile, ignoring
-
-Error: opening {dir}/c
-Caused by: Permission denied (os error 13)
-
+Error: opening {dir}/c: Permission denied (os error 13)
 Error: {dir}/d is not a file, ignoring
-
 Error: {dir}/dnp is not a file, ignoring
-
 Error: {dir}/fifo is not a file, ignoring
-
 Error: {dir}/sd is not a file, ignoring
-
-Error: couldn't stat {dir}/snx
-Caused by: No such file or directory (os error 2)
-
+Error: couldn't stat {dir}/snx: No such file or directory (os error 2)
 ",
                 dir = formatted_dir
             ),
@@ -324,7 +310,7 @@ Caused by: No such file or directory (os error 2)
             &path,
             "",
             &format!(
-                "Error: opening {}\nCaused by: Permission denied (os error 13)\n\n",
+                "Error: opening {}: Permission denied (os error 13)\n",
                 file.to_string_lossy()
             ),
         )
@@ -364,7 +350,7 @@ Caused by: No such file or directory (os error 2)
             &path,
             "",
             &format!(
-                "Error: bad permission on {}: 0664 & 0022 != 0\n\n",
+                "Error: bad permission on {}: 0664 & 0022 != 0\n",
                 file.to_string_lossy()
             ),
         )
