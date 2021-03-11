@@ -1,6 +1,5 @@
 # ssh-key-dir
 
-[![Build status](https://travis-ci.org/coreos/ssh-key-dir.svg?branch=master)](https://travis-ci.org/coreos/ssh-key-dir)
 [![crates.io](https://img.shields.io/crates/v/ssh-key-dir.svg)](https://crates.io/crates/ssh-key-dir)
 
 ssh-key-dir is an sshd [`AuthorizedKeysCommand`](https://man.openbsd.org/sshd_config#AuthorizedKeysCommand) that reads SSH authorized key files from a directory, `~/.ssh/authorized_keys.d`.  It allows SSH keys to be managed by multiple tools and processes, without competing over `~/.ssh/authorized_keys`.
