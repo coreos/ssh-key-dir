@@ -15,7 +15,7 @@
 use std::ffi::{OsStr, OsString};
 use std::io;
 
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use clap::{crate_version, App, AppSettings, Arg};
 use users::os::unix::UserExt;
 use users::switch::{switch_user_group, SwitchUserGuard};
@@ -80,7 +80,7 @@ fn main() -> Result<()> {
     // switch back
     drop(switch_guard);
 
-    Ok(())
+    bail!("CI failure");
 }
 
 #[cfg(test)]
