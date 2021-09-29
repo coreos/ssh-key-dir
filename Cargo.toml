@@ -30,5 +30,5 @@ clap = { version = "2.33", default-features = false }
 users = ">= 0.10, < 0.12"
 
 [dev-dependencies]
-nix = ">= 0.17, < 0.23"
+nix = ">= 0.17, < 0.24"
 tempfile = "3"
