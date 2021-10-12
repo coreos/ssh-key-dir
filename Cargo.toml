@@ -11,6 +11,7 @@ version = "0.1.3-alpha.0"
 
 [package.metadata.release]
 sign-commit = true
+sign-tag = true
 disable-push = true
 disable-publish = true
 pre-release-commit-message = "cargo: ssh-key-dir release {{version}}"
