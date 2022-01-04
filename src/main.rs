@@ -29,12 +29,10 @@ struct Config {
     username: OsString,
 }
 
-fn parse_args() -> Result<Config> {
-    let current_user = get_current_username().unwrap_or_else(|| OsString::from(""));
-
+fn make_clap(current_user: &OsStr) -> App {
     // Args are listed in --help in the order declared here.  Please keep
     // the entire help text to 80 columns.
-    let matches = App::new("ssh-key-dir")
+    App::new("ssh-key-dir")
         .version(crate_version!())
         .about("Print SSH keys from a user's ~/.ssh/authorized_keys.d")
         .arg(
@@ -42,9 +40,13 @@ fn parse_args() -> Result<Config> {
                 .help("Username of the account to query")
                 .takes_value(true)
                 .allow_invalid_utf8(true)
-                .default_value_os(&current_user),
+                .default_value_os(current_user),
         )
-        .get_matches();
+}
+
+fn parse_args() -> Result<Config> {
+    let current_user = get_current_username().unwrap_or_else(|| OsString::from(""));
+    let matches = make_clap(&current_user).get_matches();
 
     Ok(Config {
         username: matches
@@ -114,5 +116,10 @@ mod tests {
                 .unwrap(),
             ()
         );
+    }
+
+    #[test]
+    fn clap_tests() {
+        make_clap(&OsString::from("test")).debug_assert();
     }
 }
