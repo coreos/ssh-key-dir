@@ -42,6 +42,7 @@ fn parse_args() -> Result<Config> {
             Arg::with_name("user")
                 .help("Username of the account to query")
                 .takes_value(true)
+                .allow_invalid_utf8(true)
                 .default_value_os(&current_user),
         )
         .get_matches();
