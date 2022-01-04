@@ -16,7 +16,7 @@ use std::ffi::{OsStr, OsString};
 use std::io;
 
 use anyhow::{Context, Result};
-use clap::{crate_version, App, AppSettings, Arg};
+use clap::{crate_version, App, Arg};
 use users::os::unix::UserExt;
 use users::switch::{switch_user_group, SwitchUserGuard};
 use users::{get_current_username, get_user_by_name, User};
@@ -36,10 +36,9 @@ fn parse_args() -> Result<Config> {
     // the entire help text to 80 columns.
     let matches = App::new("ssh-key-dir")
         .version(crate_version!())
-        .global_setting(AppSettings::UnifiedHelpMessage)
         .about("Print SSH keys from a user's ~/.ssh/authorized_keys.d")
         .arg(
-            Arg::with_name("user")
+            Arg::new("user")
                 .help("Username of the account to query")
                 .takes_value(true)
                 .allow_invalid_utf8(true)
