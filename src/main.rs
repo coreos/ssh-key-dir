@@ -16,7 +16,7 @@ use std::ffi::{OsStr, OsString};
 use std::io;
 
 use anyhow::{Context, Result};
-use clap::{crate_version, App, AppSettings, Arg};
+use clap::{crate_version, App, Arg};
 use users::os::unix::UserExt;
 use users::switch::{switch_user_group, SwitchUserGuard};
 use users::{get_current_username, get_user_by_name, User};
@@ -29,22 +29,24 @@ struct Config {
     username: OsString,
 }
 
-fn parse_args() -> Result<Config> {
-    let current_user = get_current_username().unwrap_or_else(|| OsString::from(""));
-
+fn make_clap(current_user: &OsStr) -> App {
     // Args are listed in --help in the order declared here.  Please keep
     // the entire help text to 80 columns.
-    let matches = App::new("ssh-key-dir")
+    App::new("ssh-key-dir")
         .version(crate_version!())
-        .global_setting(AppSettings::UnifiedHelpMessage)
         .about("Print SSH keys from a user's ~/.ssh/authorized_keys.d")
         .arg(
-            Arg::with_name("user")
+            Arg::new("user")
                 .help("Username of the account to query")
                 .takes_value(true)
-                .default_value_os(&current_user),
+                .allow_invalid_utf8(true)
+                .default_value_os(current_user),
         )
-        .get_matches();
+}
+
+fn parse_args() -> Result<Config> {
+    let current_user = get_current_username().unwrap_or_else(|| OsString::from(""));
+    let matches = make_clap(&current_user).get_matches();
 
     Ok(Config {
         username: matches
@@ -114,5 +116,10 @@ mod tests {
                 .unwrap(),
             ()
         );
+    }
+
+    #[test]
+    fn clap_tests() {
+        make_clap(&OsString::from("test")).debug_assert();
     }
 }
