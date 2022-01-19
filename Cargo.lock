@@ -163,7 +163,7 @@ dependencies = [
 
 [[package]]
 name = "ssh-key-dir"
-version = "0.1.3-alpha.0"
+version = "0.1.3"
 dependencies = [
  "anyhow",
  "clap",
