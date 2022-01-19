@@ -34,7 +34,7 @@ Push access to the upstream repository is required in order to publish the new t
   - [ ] `RELEASE_VER=x.y.z`
   - [ ] `UPSTREAM_REMOTE=origin`
 
-- create release commits on a dedicated branch and tag it (the commits and tag will be signed with the GPG signing key you configured):
+- create release commit on a dedicated branch and tag it (the commit and tag will be signed with the GPG signing key you configured):
   - [ ] `git checkout -b release-${RELEASE_VER}`
   - [ ] `cargo release --execute ${RELEASE_VER}` (and confirm the version when prompted)
 
