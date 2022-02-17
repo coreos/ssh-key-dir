@@ -16,7 +16,7 @@ use std::ffi::{OsStr, OsString};
 use std::io;
 
 use anyhow::{Context, Result};
-use clap::{crate_version, App, Arg};
+use clap::{crate_version, Arg, Command};
 use users::os::unix::UserExt;
 use users::switch::{switch_user_group, SwitchUserGuard};
 use users::{get_current_username, get_user_by_name, User};
@@ -29,10 +29,10 @@ struct Config {
     username: OsString,
 }
 
-fn make_clap(current_user: &OsStr) -> App {
+fn make_clap(current_user: &OsStr) -> Command {
     // Args are listed in --help in the order declared here.  Please keep
     // the entire help text to 80 columns.
-    App::new("ssh-key-dir")
+    Command::new("ssh-key-dir")
         .version(crate_version!())
         .about("Print SSH keys from a user's ~/.ssh/authorized_keys.d")
         .arg(
