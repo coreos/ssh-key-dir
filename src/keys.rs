@@ -122,7 +122,7 @@ fn try_read_key_file(
         .with_context(|| format!("opening {}", ent.path().display()))?;
 
     // write comment with source path
-    let safe_path = ent.path().to_string_lossy().replace("\n", "\u{fffd}");
+    let safe_path = ent.path().to_string_lossy().replace('\n', "\u{fffd}");
     out.write_all(format!("# {}\n", safe_path).as_bytes())
         .with_context(|| format!("writing header for {}", ent.path().display()))?;
 
