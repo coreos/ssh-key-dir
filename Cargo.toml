@@ -27,7 +27,7 @@ lto = true
 
 [dependencies]
 anyhow = ">= 1.0.38, < 2"
-clap = { version = "3.2", default-features = false, features = ["std", "cargo"] }
+clap = { version = ">= 3.1, < 4", default-features = false, features = ["std", "cargo"] }
 users = ">= 0.10, < 0.12"
 
 [dev-dependencies]
