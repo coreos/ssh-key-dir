@@ -83,7 +83,7 @@ Push access to the upstream repository is required in order to publish the new t
     - update changelog
   - [ ] run `spectool -g -S rust-ssh-key-dir.spec`
   - [ ] run `kinit your_fas_account@FEDORAPROJECT.ORG`
-  - [ ] run `fedpkg new-sources <crate-name>`
+  - [ ] run `fedpkg new-sources $(spectool -S rust-ssh-key-dir.spec | sed 's:.*/::')`
   - [ ] PR the changes in [Fedora](https://src.fedoraproject.org/rpms/rust-ssh-key-dir)
   - [ ] once the PR merges to rawhide, merge rawhide into the other relevant branches (e.g. f35) then push those, for example:
     ```bash
