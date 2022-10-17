@@ -16,7 +16,7 @@ use std::ffi::{OsStr, OsString};
 use std::io;
 
 use anyhow::{Context, Result};
-use clap::{crate_version, Arg, Command};
+use clap::{crate_version, value_parser, Arg, Command};
 use users::os::unix::UserExt;
 use users::switch::{switch_user_group, SwitchUserGuard};
 use users::{get_current_username, get_user_by_name, User};
@@ -29,7 +29,7 @@ struct Config {
     username: OsString,
 }
 
-fn make_clap(current_user: &OsStr) -> Command {
+fn make_clap(current_user: OsString) -> Command {
     // Args are listed in --help in the order declared here.  Please keep
     // the entire help text to 80 columns.
     Command::new("ssh-key-dir")
@@ -38,20 +38,19 @@ fn make_clap(current_user: &OsStr) -> Command {
         .arg(
             Arg::new("user")
                 .help("Username of the account to query")
-                .takes_value(true)
-                .allow_invalid_utf8(true)
-                .default_value_os(current_user),
+                .value_parser(value_parser!(OsString))
+                .default_value(current_user),
         )
 }
 
 fn parse_args() -> Result<Config> {
     let current_user = get_current_username().unwrap_or_else(|| OsString::from(""));
-    let matches = make_clap(&current_user).get_matches();
+    let matches = make_clap(current_user).get_matches();
 
     Ok(Config {
         username: matches
-            .value_of_os("user")
-            .map(OsString::from)
+            .get_one::<OsString>("user")
+            .cloned()
             .expect("username missing"),
     })
 }
@@ -119,6 +118,6 @@ mod tests {
 
     #[test]
     fn clap_tests() {
-        make_clap(&OsString::from("test")).debug_assert();
+        make_clap(OsString::from("test")).debug_assert();
     }
 }
