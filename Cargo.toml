@@ -22,9 +22,6 @@ tag-message = "ssh-key-dir v{{version}}"
 name = "ssh-key-dir"
 path = "src/main.rs"
 
-[profile.release]
-lto = true
-
 [dependencies]
 anyhow = ">= 1.0.38, < 2"
 clap = { version = ">= 3.1, < 4", default-features = false, features = ["std", "cargo"] }
