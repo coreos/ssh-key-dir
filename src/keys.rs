@@ -172,7 +172,7 @@ mod tests {
         make_file(&keydir.join("a"), "file-a-no-newline")?;
         // unreadable file
         make_file(&keydir.join("c"), "file-c")?;
-        set_permissions(&keydir.join("c"), Permissions::from_mode(0))?;
+        set_permissions(keydir.join("c"), Permissions::from_mode(0o0))?;
         // empty file
         make_file(&keydir.join("e"), "")?;
         // dotfile
@@ -183,13 +183,13 @@ mod tests {
         make_dir(&keydir.join("d"))?;
         // unreadable directory
         make_dir(&keydir.join("dnp"))?;
-        set_permissions(&keydir.join("dnp"), Permissions::from_mode(0))?;
+        set_permissions(keydir.join("dnp"), Permissions::from_mode(0o0))?;
         // symlink to file
-        symlink(&keydir.join("a"), &keydir.join("sf"))?;
+        symlink(keydir.join("a"), keydir.join("sf"))?;
         // symlink to directory
-        symlink(&keydir.join("d"), &keydir.join("sd"))?;
+        symlink(keydir.join("d"), keydir.join("sd"))?;
         // dangling symlink
-        symlink(&keydir.join("nx"), &keydir.join("snx"))?;
+        symlink(keydir.join("nx"), keydir.join("snx"))?;
         // fifo
         mkfifo(&keydir.join("fifo"), stat::Mode::S_IRUSR)?;
 
@@ -260,10 +260,10 @@ Error: couldn't stat {formatted_dir}/snx: No such file or directory (os error 2)
     #[test]
     fn test_empty_dir() {
         let tempdir = Builder::new().prefix("ssh-key-dir").tempdir().unwrap();
-        set_permissions(&tempdir.path(), Permissions::from_mode(0o700)).unwrap();
+        set_permissions(tempdir.path(), Permissions::from_mode(0o700)).unwrap();
         let path = tempdir.path().join(KEYS_SUBDIR);
         make_dir(&path).unwrap();
-        do_read_keys(&tempdir.path(), "", "").unwrap();
+        do_read_keys(tempdir.path(), "", "").unwrap();
     }
 
     #[test]
@@ -273,7 +273,7 @@ Error: couldn't stat {formatted_dir}/snx: No such file or directory (os error 2)
         // unreadable SSH dir
         let path = tempdir.path().join("a");
         make_dir(&path).unwrap();
-        set_permissions(&path, Permissions::from_mode(0)).unwrap();
+        set_permissions(&path, Permissions::from_mode(0o0)).unwrap();
         do_read_keys(
             &path,
             "",
@@ -289,7 +289,7 @@ Error: couldn't stat {formatted_dir}/snx: No such file or directory (os error 2)
         let subdir = path.join(KEYS_SUBDIR);
         create_dir_all(&subdir).unwrap();
         set_permissions(&path, Permissions::from_mode(0o700)).unwrap();
-        set_permissions(&subdir, Permissions::from_mode(0)).unwrap();
+        set_permissions(&subdir, Permissions::from_mode(0o0)).unwrap();
         assert_eq!(
             do_read_keys(&path, "", "").unwrap_err().to_string(),
             format!("reading {}", subdir.display())
@@ -303,7 +303,7 @@ Error: couldn't stat {formatted_dir}/snx: No such file or directory (os error 2)
         make_file(&file, "contents").unwrap();
         set_permissions(&path, Permissions::from_mode(0o700)).unwrap();
         set_permissions(&subdir, Permissions::from_mode(0o700)).unwrap();
-        set_permissions(&file, Permissions::from_mode(0)).unwrap();
+        set_permissions(&file, Permissions::from_mode(0o0)).unwrap();
         do_read_keys(
             &path,
             "",
@@ -317,7 +317,7 @@ Error: couldn't stat {formatted_dir}/snx: No such file or directory (os error 2)
         // bad SSH dir permissions
         let path = tempdir.path().join("d");
         let subdir = path.join(KEYS_SUBDIR);
-        create_dir_all(&subdir).unwrap();
+        create_dir_all(subdir).unwrap();
         set_permissions(&path, Permissions::from_mode(0o775)).unwrap();
         assert_eq!(
             do_read_keys(&path, "", "").unwrap_err().to_string(),
