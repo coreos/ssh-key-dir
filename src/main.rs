@@ -57,8 +57,7 @@ fn parse_args() -> Result<Config> {
 }
 
 fn switch_user(username: &OsStr) -> Result<(User, SwitchUserGuard)> {
-    let user =
-        get_user_by_name(username).with_context(|| format!("no such user {:?}", username))?;
+    let user = get_user_by_name(username).with_context(|| format!("no such user {username:?}"))?;
     let guard =
         switch_user_group(user.uid(), user.primary_group_id()).context("couldn't switch user")?;
     Ok((user, guard))
