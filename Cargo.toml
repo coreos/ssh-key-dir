@@ -3,7 +3,7 @@ name = "ssh-key-dir"
 repository = "https://github.com/coreos/ssh-key-dir"
 license = "Apache-2.0"
 edition = "2021"
-rust-version = "1.58.0"
+rust-version = "1.66.0"
 exclude = ["/.cci.jenkinsfile", "/.github", "/.gitignore"]
 authors = [ "Benjamin Gilbert <bgilbert@redhat.com>" ]
 description = "sshd AuthorizedKeysCommand to read ~/.ssh/authorized_keys.d"
@@ -33,7 +33,7 @@ path = "src/main.rs"
 
 [dependencies]
 anyhow = ">= 1.0.38, < 2"
-clap = { version = ">= 3.1, < 4", default-features = false, features = ["std", "cargo"] }
+clap = { version = "4", default-features = false, features = ["std", "cargo", "help", "string", "usage"] }
 users = ">= 0.10, < 0.12"
 
 [dev-dependencies]
