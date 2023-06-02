@@ -108,12 +108,7 @@ mod tests {
             wrap_switch_user("root").unwrap_err().to_string(),
             "couldn't switch user"
         );
-        assert_eq!(
-            wrap_switch_user(&get_current_username().unwrap().into_string().unwrap())
-                .map(|_u| ())
-                .unwrap(),
-            ()
-        );
+        wrap_switch_user(&get_current_username().unwrap().into_string().unwrap()).unwrap();
     }
 
     #[test]
