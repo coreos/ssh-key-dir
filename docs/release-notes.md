@@ -4,6 +4,7 @@
 
 Changes:
 
+- Replace deprecated dependency users by uzers
 
 
 ## ssh-key-dir 0.1.4 (2022-09-27)

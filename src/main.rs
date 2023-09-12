@@ -17,9 +17,9 @@ use std::io;
 
 use anyhow::{Context, Result};
 use clap::{crate_version, value_parser, Arg, Command};
-use users::os::unix::UserExt;
-use users::switch::{switch_user_group, SwitchUserGuard};
-use users::{get_current_username, get_user_by_name, User};
+use uzers::os::unix::UserExt;
+use uzers::switch::{switch_user_group, SwitchUserGuard};
+use uzers::{get_current_username, get_user_by_name, User};
 
 use crate::keys::read_keys;
 
@@ -87,7 +87,7 @@ fn main() -> Result<()> {
 mod tests {
     use super::*;
 
-    use users::{get_current_username, get_effective_uid};
+    use uzers::{get_current_username, get_effective_uid};
 
     fn wrap_switch_user(username: &str) -> Result<User> {
         switch_user(&OsString::from(username)).map(|(u, _g)| u)
