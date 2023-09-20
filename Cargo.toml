@@ -31,7 +31,7 @@ path = "src/main.rs"
 [dependencies]
 anyhow = ">= 1.0.38, < 2"
 clap = { version = "4", default-features = false, features = ["std", "cargo", "help", "string", "usage"] }
-users = ">= 0.10, < 0.12"
+uzers = ">= 0.10, < 0.12"
 
 [dev-dependencies]
 nix = ">= 0.17, < 0.27"

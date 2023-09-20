@@ -19,7 +19,7 @@ use std::os::unix::fs::{MetadataExt, PermissionsExt};
 use std::path::{Path, PathBuf};
 
 use anyhow::{bail, Context, Result};
-use users::get_effective_uid;
+use uzers::get_effective_uid;
 
 const KEYS_SUBDIR: &str = "authorized_keys.d";
 
