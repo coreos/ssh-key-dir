@@ -5,6 +5,7 @@
 Changes:
 
 - Replace deprecated dependency users by uzers
+- Cargo.toml: bump MSRV to 1.75.0
 
 
 ## ssh-key-dir 0.1.4 (2022-09-27)
