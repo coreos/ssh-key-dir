@@ -1,11 +1,14 @@
 # Release notes
 
-## Upcoming ssh-key-dir 0.1.5 (unreleased)
+## Upcoming ssh-key-dir 0.1.6 (unreleased)
+
+## Upcoming ssh-key-dir 0.1.5 (2024-11-13)
 
 Changes:
 
 - Replace deprecated dependency users by uzers
 - Cargo.toml: bump MSRV to 1.75.0
+- docs/release-notes: update for release 0.1.5
 
 
 ## ssh-key-dir 0.1.4 (2022-09-27)
