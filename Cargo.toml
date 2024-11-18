@@ -8,7 +8,7 @@ exclude = ["/.cci.jenkinsfile", "/.github", "/.gitignore"]
 authors = [ "Benjamin Gilbert <bgilbert@redhat.com>" ]
 description = "sshd AuthorizedKeysCommand to read ~/.ssh/authorized_keys.d"
 readme = "README.md"
-version = "0.1.4"
+version = "0.1.5"
 
 [package.metadata.release]
 sign-commit = true
