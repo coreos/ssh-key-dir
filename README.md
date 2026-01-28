@@ -1,3 +1,11 @@
+# This project is deprecated
+
+This is replaced by glob support in `AuthorizedKeysFile` starting with OpenSSH 10.0.
+
+See: https://github.com/coreos/ssh-key-dir/issues/188
+
+---
+
 # ssh-key-dir
 
 [![crates.io](https://img.shields.io/crates/v/ssh-key-dir.svg)](https://crates.io/crates/ssh-key-dir)
